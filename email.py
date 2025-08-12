@@ -3,7 +3,7 @@ import datetime as dt
 from zoneinfo import ZoneInfo
 from amazon import amazon_expense_gen
 import os
-
+import sys
 class email_agent():
     def __init__(self,
                  start_time = dt.datetime.now(ZoneInfo('America/New_York')) - dt.timedelta(days=1), 
@@ -67,8 +67,15 @@ class email_agent():
                     f.write(who +"::"+url.strip() + "\n")
                 i += 1 
 if __name__ == "__main__":
+    format_string = "%m/%d/%Y %H:%M"
+    if len(sys.argv) > 1:
+        try:
+            start = dt.datetime.strptime(sys.argv[1], format_string)
+            end = dt.datetime.strptime(sys.argv[2], format_string)
+            agent = email_agent(start_time=start, end_time=end)
+        except IndexError:
+            agent = email_agent()
     
-    agent = email_agent()
     agent.find_orders()
     agent.to_order_txt()
     report_gen = amazon_expense_gen(quantity=agent.quantity)
