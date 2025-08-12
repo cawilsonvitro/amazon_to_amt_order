@@ -73,9 +73,11 @@ if __name__ == "__main__":
             start = dt.datetime.strptime(sys.argv[1], format_string)
             end = dt.datetime.strptime(sys.argv[2], format_string)
             agent = email_agent(start_time=start, end_time=end)
-        except IndexError:
+        except Exception as e:
+            print(e)
             agent = email_agent()
-    
+    else:
+        agent = email_agent()
     agent.find_orders()
     agent.to_order_txt()
     report_gen = amazon_expense_gen(quantity=agent.quantity)
@@ -86,7 +88,10 @@ if __name__ == "__main__":
     
     # #cleaning up
     for pdf in report_gen.pdf_paths:
-        os.remove(pdf)
+        try:
+            os.remove(pdf)
+        except:
+            pass
 #how to deal with  str args
 # start = "08/12/2025 11:04"
 # format_string = "%m/%d/%Y %H:%M"
