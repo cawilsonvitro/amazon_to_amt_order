@@ -52,7 +52,7 @@ class amazon_expense_gen():
             self.pdf_paths.append(pdf_path)
             try:
                 config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
-                pdfkit.from_url(url, pdf_path, configuration=config, verbose = True)
+                pdfkit.from_url(url, pdf_path, configuration=config)#, verbose = True)
             except ConnectionRefusedError:
                 continue
 
@@ -75,7 +75,6 @@ class amazon_expense_gen():
                         t3 = t2.split("\n")
                     except ValueError:
                         t2 = first_page[first_page.index("in stock"): first_page.index("in stock") + 60]
-                        print(t2)
                         t3 = t2.split("\n")
                     price = f"{t3[1]},{t3[3]}"
                     item["Cost"] = price
@@ -114,7 +113,6 @@ class amazon_expense_gen():
             writer.writerows(self.items)
 #Date of Request Requested By Supplier Phone Contact Part #	Quantity Description Cost (each) Total Shipping Tax	Order Total	Tentative Ship/Delivery Date Chemical Prior Approval Status	Project #	Comments	Link
 if __name__ == "__main__":
-    print(sys.argv)
     if len(sys.argv) > 1:
         who = sys.argv[1]
         try:
