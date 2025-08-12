@@ -12,6 +12,7 @@ class email_agent():
         self.end_time = end_time
         self.amazon_orders = []
         self.names = []
+        self.quantity = []  
         return
     
     def find_orders(self):
@@ -37,13 +38,23 @@ class email_agent():
                     self.names.append(message.SenderName.split(",")[-1])
                     print(f"Amazon Order Found: {message.SenderName}")
                     urls = message.Body.split("https://")[1:]
+                    #getting quantity out
+                    k = 0
+                    for url in urls:
+                        if "::" in url:
+                            quantity = url.split("::")
+                            quantity = [str(i).strip() for i in quantity]
+                            self.quantity.append(quantity[1])
+                      
+                        else:
+                            self.quantity.append("1")
+                        k += 1
                     full_urls = []
                     for url in urls:
                         full_url = "https://" + url.split()[0]
                         full_urls.append(full_url)
                         
                     self.amazon_orders.append(full_urls)
-            print(self.names)
         except Exception as e:
             pass
         
@@ -60,14 +71,13 @@ if __name__ == "__main__":
     agent = email_agent()
     agent.find_orders()
     agent.to_order_txt()
-
-    report_gen = amazon_expense_gen()
+    report_gen = amazon_expense_gen(quantity=agent.quantity)
     report_gen.get_urls()
     report_gen.generate_pdf_from_url()
     report_gen.read_pdf()
     report_gen.to_csv()
     
-    #cleaning up
+    # #cleaning up
     for pdf in report_gen.pdf_paths:
         os.remove(pdf)
 #how to deal with  str args

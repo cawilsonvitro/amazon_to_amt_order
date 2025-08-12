@@ -5,12 +5,12 @@ import csv
 import sys
 
 class amazon_expense_gen():
-    def __init__(self, url_txt = "amazon_urls.txt", who = "Carl", quantitiy = [], proj = "1601010642"):
+    def __init__(self, url_txt = "amazon_urls.txt", who = "Carl", quantity = [], proj = "1601010642"):
         self.txt = url_txt
         self.urls = []
         self.names = []
         self.pdf_paths = []
-        self.Quantity = quantitiy
+        self.Quantity = quantity
 
 
         self.proj = proj
