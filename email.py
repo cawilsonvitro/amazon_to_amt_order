@@ -88,9 +88,11 @@ if __name__ == "__main__":
     
     # #cleaning up
     for pdf in report_gen.pdf_paths:
+        print(pdf)
         try:
             os.remove(pdf)
-        except:
+        except Exception as e:
+            print(e)
             pass
 #how to deal with  str args
 # start = "08/12/2025 11:04"
