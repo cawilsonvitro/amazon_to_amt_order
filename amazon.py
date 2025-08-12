@@ -46,15 +46,18 @@ class amazon_expense_gen():
             
     def generate_pdf_from_url(self):
         for url in self.urls:
-            name = url.split('/')[3]
-            self.names.append(name)
-            pdf_path = f"{name}.pdf"
-            self.pdf_paths.append(pdf_path)
-            try:
-                config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
-                pdfkit.from_url(url, pdf_path, configuration=config)#, verbose = True)
-            except ConnectionRefusedError:
-                continue
+            if "amazon" in url.lower():
+                name = url.split('/')[3]
+                print("NAME:", name)
+                self.names.append(name)
+                pdf_path = f"{name}.pdf"
+                self.pdf_paths.append(pdf_path)
+                try:
+                    config = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+                    pdfkit.from_url(url, pdf_path, configuration=config)#, verbose = True)
+                except Exception as e:
+                    print(e)
+                    continue
 
     def read_pdf(self):
         i = 0
@@ -81,17 +84,18 @@ class amazon_expense_gen():
                     total = str(float(price.replace(",", ".")) * float(item["Quantity"])).replace(".", ",")
                     item["Total"] = f"{total}"
                     item["Order Total"] = f"{total}"
-                try:
-                    pt = page.extract_text() #page text
-                    asin = pt[pt.index("ASIN") + 7:pt.index("ASIN") + 20]
-                    asin = asin.split('\n')[0].strip()
-                    item["ASIN"] = asin 
-                        
+                if item["ASIN"] == "":
+                    try:
+                        pt = page.extract_text() #page text
+                        asin = pt[pt.index("ASIN"):pt.index("ASIN") + 20]
+                        asin = asin.split('\n')[1].strip()
+                        item["ASIN"] = asin
 
-                except ValueError:
-                    item["ASIN"] = "Not found"
+                    except ValueError as e:
+                        item["ASIN"] = ""
                 j += 1
-                
+            if item["ASIN"] == "":
+                item["ASIN"] = "Not Found"
             self.items.append(item)
             i += 1
     
@@ -112,6 +116,8 @@ class amazon_expense_gen():
 
             writer.writerows(self.items)
 #Date of Request Requested By Supplier Phone Contact Part #	Quantity Description Cost (each) Total Shipping Tax	Order Total	Tentative Ship/Delivery Date Chemical Prior Approval Status	Project #	Comments	Link
+
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         who = sys.argv[1]

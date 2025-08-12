@@ -2,7 +2,7 @@ import win32com.client
 import datetime as dt
 from zoneinfo import ZoneInfo
 from amazon import amazon_expense_gen
-
+import os
 
 class email_agent():
     def __init__(self,
@@ -10,7 +10,8 @@ class email_agent():
                  end_time = dt.datetime.now(ZoneInfo('America/New_York'))):
         self.start_time = start_time
         self.end_time = end_time
-        
+        self.amazon_orders = []
+        self.names = []
         return
     
     def find_orders(self):
@@ -30,12 +31,42 @@ class email_agent():
             print(f"Fetching emails from {start_time_str} to {end_time_str}")
             filter_string = f"[ReceivedTime] >= '{start_time_str}' AND [ReceivedTime] <= '{end_time_str}'"
             messages = inbox.Items.Restrict(filter_string)
-            amazon_orders = []
             for message in messages:
+                
             #    print(f"Subject: {message.Subject}, Sender: {message.SenderName}, Received: {message.ReceivedTime}")
                 if "amazon order" == message.Subject.lower():
-                    print(f"Amazon Order Found: {message.Subject}")
-                    amazon_orders.append(message.Body)
-
+                    self.names.append(message.SenderName.split(",")[-1])
+                    print(f"Amazon Order Found: {message.SenderName}")
+                    urls = message.Body.split("https://")[1:]
+                    self.amazon_orders.append(message.Body)
+            print(self.names)
         except Exception as e:
             pass
+        
+    def to_order_txt(self):
+        print(len(self.amazon_orders))
+        with open("amazon_urls.txt", "a") as f:
+            for order in self.amazon_orders:
+                f.write(order.strip())
+
+if __name__ == "__main__":
+    
+    agent = email_agent()
+    agent.find_orders()
+    agent.to_order_txt()
+
+    # report_gen = amazon_expense_gen()
+    # report_gen.get_urls()
+    # report_gen.generate_pdf_from_url()
+    # report_gen.read_pdf()
+    # report_gen.to_csv()
+    
+    # #cleaning up
+    # for pdf in report_gen.pdf_paths:
+    #     os.remove(pdf)
+#how to deal with  str args
+# start = "08/12/2025 11:04"
+# format_string = "%m/%d/%Y %H:%M"
+
+# datetime_obj = dt.datetime.strptime(start, format_string)
+# print(datetime_obj)
