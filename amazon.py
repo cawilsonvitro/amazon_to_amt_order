@@ -36,6 +36,7 @@ class amazon_expense_gen():
         }
 
         self.items = []
+        self.whos = []
         
     def get_urls(self):
         with open(self.txt, 'r') as file:
@@ -46,6 +47,9 @@ class amazon_expense_gen():
             
     def generate_pdf_from_url(self):
         for url in self.urls:
+            if "::" in url:
+                who, url = url.split("::")
+                self.whos.append(who)
             if "amazon" in url.lower():
                 name = url.split('/')[3]
                 print("NAME:", name)
@@ -96,6 +100,7 @@ class amazon_expense_gen():
                 j += 1
             if item["ASIN"] == "":
                 item["ASIN"] = "Not Found"
+            item["Who"] = self.whos[i]
             self.items.append(item)
             i += 1
     
@@ -103,8 +108,8 @@ class amazon_expense_gen():
         name = f"amazon_expense_{dt.now().strftime('%Y-%m-%d')}.csv"
         csv_path = f"{name}"
         fns = ["Date", "Who", "Supplier", "Phone", "Contact", "ASIN", "Quantity", "Description", "Cost", "Total", "Shipping", "Tax", "Order Total", "Delivery", "Chemical", "Proj", "Comments", "Link"]
-        
-        with open(csv_path, 'a', newline='', encoding = "utf-8") as csv_file:
+            
+        with open(csv_path, 'w', newline='', encoding = "utf-8") as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=fns)
             writer.writeheader()
         
@@ -120,12 +125,11 @@ class amazon_expense_gen():
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        who = sys.argv[1]
         try:
-            quantity = sys.argv[2].split(",")
+            quantity = sys.argv[1].split(",")
         except IndexError:
             quantity = []
-        temp = amazon_expense_gen(who=who, quantitiy=quantity)
+        temp = amazon_expense_gen(quantitiy=quantity)
     else:
         temp = amazon_expense_gen()
     

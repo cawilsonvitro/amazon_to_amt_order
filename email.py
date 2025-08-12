@@ -32,38 +32,44 @@ class email_agent():
             filter_string = f"[ReceivedTime] >= '{start_time_str}' AND [ReceivedTime] <= '{end_time_str}'"
             messages = inbox.Items.Restrict(filter_string)
             for message in messages:
-                
             #    print(f"Subject: {message.Subject}, Sender: {message.SenderName}, Received: {message.ReceivedTime}")
                 if "amazon order" == message.Subject.lower():
                     self.names.append(message.SenderName.split(",")[-1])
                     print(f"Amazon Order Found: {message.SenderName}")
                     urls = message.Body.split("https://")[1:]
-                    self.amazon_orders.append(message.Body)
+                    full_urls = []
+                    for url in urls:
+                        full_url = "https://" + url.split()[0]
+                        full_urls.append(full_url)
+                        
+                    self.amazon_orders.append(full_urls)
             print(self.names)
         except Exception as e:
             pass
         
     def to_order_txt(self):
-        print(len(self.amazon_orders))
-        with open("amazon_urls.txt", "a") as f:
+        with open("amazon_urls.txt", "w") as f:
+            i = 0
             for order in self.amazon_orders:
-                f.write(order.strip())
-
+                who = self.names[i] 
+                for url in order:
+                    f.write(who +"::"+url.strip() + "\n")
+                i += 1 
 if __name__ == "__main__":
     
     agent = email_agent()
     agent.find_orders()
     agent.to_order_txt()
 
-    # report_gen = amazon_expense_gen()
-    # report_gen.get_urls()
-    # report_gen.generate_pdf_from_url()
-    # report_gen.read_pdf()
-    # report_gen.to_csv()
+    report_gen = amazon_expense_gen()
+    report_gen.get_urls()
+    report_gen.generate_pdf_from_url()
+    report_gen.read_pdf()
+    report_gen.to_csv()
     
-    # #cleaning up
-    # for pdf in report_gen.pdf_paths:
-    #     os.remove(pdf)
+    #cleaning up
+    for pdf in report_gen.pdf_paths:
+        os.remove(pdf)
 #how to deal with  str args
 # start = "08/12/2025 11:04"
 # format_string = "%m/%d/%Y %H:%M"
