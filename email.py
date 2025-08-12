@@ -67,7 +67,7 @@ class email_agent():
                     f.write(who +"::"+url.strip() + "\n")
                 i += 1 
 if __name__ == "__main__":
-    format_string = "%m/%d/%Y %H:%M"
+    format_string = "%m/%d/%Y-%H:%M"
     if len(sys.argv) > 1:
         try:
             start = dt.datetime.strptime(sys.argv[1], format_string)
@@ -94,7 +94,7 @@ if __name__ == "__main__":
             pass
 #how to deal with  str args
 # start = "08/12/2025 11:04"
-# format_string = "%m/%d/%Y %H:%M"
+# format_string = "%m/%d/%Y-%H:%M"
 
 # datetime_obj = dt.datetime.strptime(start, format_string)
 # print(datetime_obj)

@@ -1,3 +1,21 @@
+### emailer 
+this exe is to check emails for a set period of time and then make a .csv file to compose everything into amt orders, currently only works for amazon
+
+Email comp.
+To use this system the email must be composed with the subject: amazon order then have a body as shown below
+
+<url1>::number of url1 needed
+<url2>::number of url2 needed
+
+if not quantity is added it will be assumed to be 1
+
+to run and check for emails over the last 24 hours just run the email.exe it can take custom times tho with the arg below
+email.exe <start> <end>
+times must beformatted as %m/%d/%Y-%H:%M an example is shown below
+
+email.exe 08/10/2025-11:04 08/12/2025-11:04    
+
+### usage of the amazon system
 This exe is used to get a pdf from an amazon url then decode it into a csv file
 
 Usage: 
