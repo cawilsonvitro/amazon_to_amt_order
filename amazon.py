@@ -70,8 +70,13 @@ class amazon_expense_gen():
                 
                 if j == 0:#attempting to use in stock
                     first_page = page.extract_text()
-                    t2 = first_page[first_page.index("In Stock"): first_page.index("In Stock") + 20]
-                    t3 = t2.split("\n")
+                    try:
+                        t2 = first_page[first_page.index("In Stock"): first_page.index("In Stock") + 20]
+                        t3 = t2.split("\n")
+                    except ValueError:
+                        t2 = first_page[first_page.index("in stock"): first_page.index("in stock") + 60]
+                        print(t2)
+                        t3 = t2.split("\n")
                     price = f"{t3[1]},{t3[3]}"
                     item["Cost"] = price
                     total = str(float(price.replace(",", ".")) * float(item["Quantity"])).replace(".", ",")
